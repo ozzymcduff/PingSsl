@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Authentication;
 using NDesk.Options;
+using System.Net.NetworkInformation;
 
 namespace PingSslVersions
 {
@@ -38,7 +39,9 @@ namespace PingSslVersions
             
             if (string.IsNullOrEmpty(machineName))
             {
-                machineName = Environment.MachineName;
+                var ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+                string localhostFqdn = string.Format("{0}.{1}", ipProperties.HostName, ipProperties.DomainName).Trim('.');
+                machineName = localhostFqdn;
             }
             if (string.IsNullOrEmpty(serverCertificateName))
             {
