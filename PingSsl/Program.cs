@@ -22,6 +22,13 @@ namespace PingSslVersions
             return Enum.GetValues(typeof(SslProtocols)).Cast<SslProtocols>().Where(p=>p!=SslProtocols.None);
         }
 
+		private static string GetLocalHostFqdn()
+		{
+			var ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+			string localhostFqdn = string.Format("{0}.{1}", ipProperties.HostName, ipProperties.DomainName).Trim('.');
+			return localhostFqdn;
+		}
+
         private static void Main(string[] args)
         {
             string serverCertificateName = null;
@@ -39,9 +46,14 @@ namespace PingSslVersions
             
             if (string.IsNullOrEmpty(machineName))
             {
-                var ipProperties = IPGlobalProperties.GetIPGlobalProperties();
-                string localhostFqdn = string.Format("{0}.{1}", ipProperties.HostName, ipProperties.DomainName).Trim('.');
-                machineName = localhostFqdn;
+				try {
+					machineName = GetLocalHostFqdn ();
+				} catch (Exception ex) {
+					if (verbose) {
+						Console.Error.WriteLine (ex.Message);
+					}
+					machineName = Environment.MachineName;
+				}
             }
             if (string.IsNullOrEmpty(serverCertificateName))
             {

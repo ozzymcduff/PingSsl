@@ -60,7 +60,12 @@ namespace PingSslVersions
                     Console.WriteLine("Client connected.");
                 }
                 // Create an SSL stream that will close the client's stream.
-                using (var sslStream = new SslStream(client.GetStream(), false, ValidateServerCertificate, UserCertificateSelectionCallback, EncryptionPolicy.RequireEncryption))
+                using (var sslStream = new SslStream(client.GetStream(), false, ValidateServerCertificate, UserCertificateSelectionCallback
+					#if !__MonoCS__
+					// ugly, but an actual difference in the mono api
+					, EncryptionPolicy.RequireEncryption
+					#endif
+				))
                 {
                     try
                     {
