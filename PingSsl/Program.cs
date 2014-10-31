@@ -48,8 +48,17 @@ namespace PingSslVersions
                 Console.WriteLine("Connecting to: {0}", machineName);
                 Console.WriteLine("Trying to use the following protocols: {0}", sslprotocols);
             }
-            new SslTcpClient(verbose).RunClient(machineName, serverCertificateName,
-                sslprotocols);
+            var client = new SslTcpClient(verbose);
+            try
+            {
+                client.RunClient(machineName, serverCertificateName, sslprotocols);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                Environment.Exit(1);
+            }
+            
         }
 
         private static SslProtocols ParseSslprotocols(string s)

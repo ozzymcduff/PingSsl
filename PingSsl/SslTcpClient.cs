@@ -70,17 +70,20 @@ namespace PingSslVersions
                     catch (AuthenticationException e)
                     {
                         Console.Error.WriteLine("Exception: {0}", e.Message);
-                        if (e.InnerException != null)
+                        if (_verbose)
                         {
-                            Console.Error.WriteLine("Inner exception: {0}", e.InnerException.Message);
+                            if (e.InnerException != null)
+                            {
+                                Console.Error.WriteLine("Inner exception: {0}", e.InnerException.Message);
+                            }
                         }
                         Console.Error.WriteLine("Authentication failed - closing the connection.");
                         client.Close();
                         return;
                     }
-            
-                    byte[] messsage = Encoding.UTF8.GetBytes(@"GET https://"+machineName+@"/ HTTP/1.1
-Host: "+machineName+@"
+
+                    byte[] messsage = Encoding.UTF8.GetBytes(@"GET https://" + machineName + @"/ HTTP/1.1
+Host: " + machineName + @"
 Connection: keep-alive
 Cache-Control: max-age=0
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
@@ -124,7 +127,7 @@ Cookie:
                     break;
                 }
             }
-            
+
             return messageData.ToString();
         }
     }
