@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
@@ -34,14 +33,14 @@ namespace PingSslVersions
                 return true;
             }
             Console.Error.WriteLine("Certificate error: {0}", sslPolicyErrors);
-            return false;
+            return true;
         }
 
         public X509Certificate UserCertificateSelectionCallback(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
         {
             if (_verbose)
             {
-                Console.WriteLine("UserCertificateSelectionCallback: " + localCertificates.Count);
+                Console.WriteLine("UserCertificateSelectionCallback: {0}", localCertificates.Count);
                 foreach (X509Certificate certificate in localCertificates)
                 {
                     Console.WriteLine(certificate.Subject);

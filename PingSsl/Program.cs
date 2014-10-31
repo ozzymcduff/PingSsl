@@ -11,7 +11,14 @@ namespace PingSslVersions
         {
             Console.WriteLine("To ping ssl:");
             Console.WriteLine("pingssl -m=machinename -c=servercertificatename -p=sslprotocols");
+            Console.WriteLine("The following protocols can be used: ");
+            Console.WriteLine(String.Join(", ", AvailableSslProtocols().Select(p => p.ToString().ToLower())));
             Environment.Exit(1);
+        }
+
+        private static System.Collections.Generic.IEnumerable<SslProtocols> AvailableSslProtocols()
+        {
+            return Enum.GetValues(typeof(SslProtocols)).Cast<SslProtocols>().Where(p=>p!=SslProtocols.None);
         }
 
         private static void Main(string[] args)
@@ -28,16 +35,10 @@ namespace PingSslVersions
                 { "p|sslprotocols=", v=>sslprotocols=ParseSslprotocols(v)},
               };
             p.Parse(args);
-            if (args == null || args.Length ==0)
-            {
-                DisplayUsage();
-                return;
-            }
             
             if (string.IsNullOrEmpty(machineName))
             {
-                DisplayUsage();
-                return;
+                machineName = Environment.MachineName;
             }
             if (string.IsNullOrEmpty(serverCertificateName))
             {
@@ -46,8 +47,8 @@ namespace PingSslVersions
             if (verbose)
             {
                 Console.WriteLine("Connecting to: {0}", machineName);
-                Console.WriteLine("Trying to use the following protocols: {0}", sslprotocols);
             }
+            Console.WriteLine("Ssl protocols: {0}", sslprotocols);
             var client = new SslTcpClient(verbose);
             try
             {
@@ -58,7 +59,6 @@ namespace PingSslVersions
                 Console.Error.WriteLine(ex.Message);
                 Environment.Exit(1);
             }
-            
         }
 
         private static SslProtocols ParseSslprotocols(string s)
@@ -81,7 +81,7 @@ namespace PingSslVersions
             SslProtocols result;
             if (!Enum.TryParse(protocol, true, out result))
             {
-                throw new Exception("! "+protocol);
+                throw new Exception(String.Format("Could not parse protocol: {0}",protocol));
             }
             return result;
         }
